@@ -2,7 +2,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { notFound } from 'next/navigation'
 import SubjectClient from './SubjectClient'
-
+export const revalidate = 3600
 export default async function SubjectPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const payload = await getPayload({ config })

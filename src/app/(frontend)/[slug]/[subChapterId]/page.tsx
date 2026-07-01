@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import BottomTabsClient from './BottomTabsClient'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
-
+export const revalidate = 3600
 export default async function SubChapterPage({
   params,
 }: {
