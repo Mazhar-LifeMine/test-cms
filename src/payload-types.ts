@@ -69,6 +69,9 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    subjects: Subject;
+    chapters: Chapter;
+    'sub-chapters': SubChapter;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -78,6 +81,9 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    subjects: SubjectsSelect<false> | SubjectsSelect<true>;
+    chapters: ChaptersSelect<false> | ChaptersSelect<true>;
+    'sub-chapters': SubChaptersSelect<false> | SubChaptersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -87,8 +93,12 @@ export interface Config {
     defaultIDType: string;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'site-settings': SiteSetting;
+  };
+  globalsSelect: {
+    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -163,6 +173,140 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subjects".
+ */
+export interface Subject {
+  id: string;
+  title: string;
+  /**
+   * Text direction for this subject
+   */
+  direction: 'ltr' | 'rtl';
+  /**
+   * URL friendly name e.g. mongodb, nodejs
+   */
+  slug: string;
+  description?: string | null;
+  /**
+   * Upload SVG or PNG icon for this subject
+   */
+  icon?: (string | null) | Media;
+  /**
+   * Hex color e.g. #22d3a0
+   */
+  color?: string | null;
+  /**
+   * Display order on homepage
+   */
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "chapters".
+ */
+export interface Chapter {
+  id: string;
+  title: string;
+  subject: string | Subject;
+  difficulty: 'easy' | 'intermediate' | 'hard';
+  /**
+   * Chapter number e.g. 1, 2, 3
+   */
+  order?: number | null;
+  /**
+   * Brief summary of what this chapter covers
+   */
+  description?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sub-chapters".
+ */
+export interface SubChapter {
+  id: string;
+  title: string;
+  /**
+   * Select subject first to filter chapters
+   */
+  subject: string | Subject;
+  /**
+   * Only shows chapters of selected subject
+   */
+  chapter: string | Chapter;
+  order: number;
+  content?: {
+    /**
+     * 📖 Main explanation
+     */
+    theory?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * 💻 Real world example
+     */
+    example?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * ⌨️ Code snippet
+     */
+    codeBlock?: string | null;
+    /**
+     * 📝 Key points to remember
+     */
+    summary?: string | null;
+    /**
+     * ✏️ Practice question
+     */
+    exercise?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -192,6 +336,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: string | Media;
+      } | null)
+    | ({
+        relationTo: 'subjects';
+        value: string | Subject;
+      } | null)
+    | ({
+        relationTo: 'chapters';
+        value: string | Chapter;
+      } | null)
+    | ({
+        relationTo: 'sub-chapters';
+        value: string | SubChapter;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -277,6 +433,55 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subjects_select".
+ */
+export interface SubjectsSelect<T extends boolean = true> {
+  title?: T;
+  direction?: T;
+  slug?: T;
+  description?: T;
+  icon?: T;
+  color?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "chapters_select".
+ */
+export interface ChaptersSelect<T extends boolean = true> {
+  title?: T;
+  subject?: T;
+  difficulty?: T;
+  order?: T;
+  description?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sub-chapters_select".
+ */
+export interface SubChaptersSelect<T extends boolean = true> {
+  title?: T;
+  subject?: T;
+  chapter?: T;
+  order?: T;
+  content?:
+    | T
+    | {
+        theory?: T;
+        example?: T;
+        codeBlock?: T;
+        summary?: T;
+        exercise?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -314,6 +519,30 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings".
+ */
+export interface SiteSetting {
+  id: string;
+  siteName: string;
+  siteDescription?: string | null;
+  logo?: (string | null) | Media;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  siteName?: T;
+  siteDescription?: T;
+  logo?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

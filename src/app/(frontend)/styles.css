@@ -1,164 +1,83 @@
+@import 'tailwindcss';
+
 :root {
-  --font-mono: 'Roboto Mono', monospace;
+  --background: 0 0% 0%;
+  --foreground: 0 0% 95%;
+  --card: 240 10% 8%;
+  --card-foreground: 0 0% 95%;
+  --popover: 240 10% 8%;
+  --popover-foreground: 0 0% 95%;
+  --primary: 270 80% 70%;
+  --primary-foreground: 0 0% 0%;
+  --secondary: 240 5% 15%;
+  --secondary-foreground: 0 0% 95%;
+  --muted: 240 5% 15%;
+  --muted-foreground: 240 5% 55%;
+  --accent: 240 5% 15%;
+  --accent-foreground: 0 0% 95%;
+  --destructive: 0 85% 60%;
+  --destructive-foreground: 0 0% 95%;
+  --border: 240 5% 15%;
+  --input: 240 5% 15%;
+  --ring: 270 80% 70%;
+  --radius: 0.75rem;
+  --font-latin: 'Inter', system-ui, sans-serif;
+  --font-arabic: 'Harmattan', serif;
+}
+.rich-text ol {
+  list-style-type: decimal !important;
+  padding-left: 1.5rem !important;
+  margin: 0.5rem 0 !important;
 }
 
-* {
-  box-sizing: border-box;
+.rich-text ul {
+  list-style-type: disc !important;
+  padding-left: 1.5rem !important;
+  margin: 0.5rem 0 !important;
 }
 
-html {
-  font-size: 18px;
-  line-height: 32px;
-
-  background: rgb(0, 0, 0);
-  -webkit-font-smoothing: antialiased;
+.rich-text li {
+  margin: 0.25rem 0 !important;
+  display: list-item !important;
+}
+.rich-text h1 {
+  font-size: 1.8rem !important;
+  font-weight: 600 !important;
+  color: #fff !important;
+  margin: 1rem 0 !important;
 }
 
-html,
-body,
-#app {
-  height: 100%;
+.rich-text h2 {
+  font-size: 1.4rem !important;
+  font-weight: 600 !important;
+  color: #fff !important;
+  margin: 0.8rem 0 !important;
 }
 
-body {
-  font-family: system-ui;
-  font-size: 18px;
-  line-height: 32px;
-
-  margin: 0;
-  color: rgb(1000, 1000, 1000);
-
-  @media (max-width: 1024px) {
-    font-size: 15px;
-    line-height: 24px;
-  }
+.rich-text h3 {
+  font-size: 1.2rem !important;
+  font-weight: 600 !important;
+  color: #d4d4d4 !important;
+  margin: 0.6rem 0 !important;
 }
 
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
+.rich-text h4 {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  color: #d4d4d4 !important;
+  margin: 0.5rem 0 !important;
 }
-
-h1 {
-  margin: 40px 0;
-  font-size: 64px;
-  line-height: 70px;
-  font-weight: bold;
-
-  @media (max-width: 1024px) {
-    margin: 24px 0;
-    font-size: 42px;
-    line-height: 42px;
-  }
-
-  @media (max-width: 768px) {
-    font-size: 38px;
-    line-height: 38px;
-  }
-
-  @media (max-width: 400px) {
-    font-size: 32px;
-    line-height: 32px;
-  }
+.rich-text mark {
+  background-color: rgba(234, 179, 8, 0.3) !important;
+  color: inherit !important;
+  padding: 1px 2px !important;
+  border-radius: 2px !important;
 }
-
-p {
-  margin: 24px 0;
-
-  @media (max-width: 1024px) {
-    margin: calc(var(--base) * 0.75) 0;
-  }
-}
-
-a {
-  color: currentColor;
-
-  &:focus {
-    opacity: 0.8;
-    outline: none;
-  }
-
-  &:active {
-    opacity: 0.7;
-    outline: none;
-  }
-}
-
-svg {
-  vertical-align: middle;
-}
-
-.home {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  height: 100vh;
-  padding: 45px;
-  max-width: 1024px;
-  margin: 0 auto;
-  overflow: hidden;
-
-  @media (max-width: 400px) {
-    padding: 24px;
-  }
-
-  .content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    flex-grow: 1;
-
-    h1 {
-      text-align: center;
-    }
-  }
-
-  .links {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-
-    a {
-      text-decoration: none;
-      padding: 0.25rem 0.5rem;
-      border-radius: 4px;
-    }
-
-    .admin {
-      color: rgb(0, 0, 0);
-      background: rgb(1000, 1000, 1000);
-      border: 1px solid rgb(0, 0, 0);
-    }
-
-    .docs {
-      color: rgb(1000, 1000, 1000);
-      background: rgb(0, 0, 0);
-      border: 1px solid rgb(1000, 1000, 1000);
-    }
-  }
-
-  .footer {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-
-    @media (max-width: 1024px) {
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    p {
-      margin: 0;
-    }
-
-    .codeLink {
-      text-decoration: none;
-      padding: 0 0.5rem;
-      background: rgb(60, 60, 60);
-      border-radius: 4px;
-    }
-  }
+.rich-text code {
+  background-color: rgba(234, 179, 8, 0.15) !important;
+  color: #f0b429 !important;
+  padding: 2px 6px !important;
+  border-radius: 3px !important;
+  font-family: inherit !important;
+  font-size: inherit !important;
 }
