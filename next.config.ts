@@ -26,6 +26,9 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.resolve(dirname),
   },
+  experimental: {
+    serverComponentsExternalPackages: ['mongoose'],
+  },
 }
 
 export default withPayload(nextConfig, { devBundleServerPackages: false })
