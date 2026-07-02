@@ -2,11 +2,11 @@
 
 import { useState } from 'react'
 import { RichText } from '@payloadcms/richtext-lexical/react'
-import { ChevronDown, ChevronRight, Plus, Minus } from 'lucide-react'
-import Link from 'next/link'
+import { ChevronDown, ChevronRight, Plus, Minus, ArrowLeft, ArrowRight } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { BookOpen, Code2, FileText, PenLine, Lightbulb } from 'lucide-react'
-import { ArrowLeft, ArrowRight } from 'lucide-react'
+import BottomTabsClient from './[subChapterId]/BottomTabsClient'
+
 type SubChapter = {
   id: string
   title: string
@@ -55,10 +55,10 @@ export default function SubjectClient({ subject, chapters, slug }: Props) {
   const [expandedChapters, setExpandedChapters] = useState<string[]>(
     chapters.length > 0 ? [chapters[0].id] : [],
   )
-  // separate expand state for mobile list (independent from desktop sidebar)
   const [mobileExpanded, setMobileExpanded] = useState<string[]>(
     chapters.length > 0 ? [chapters[0].id] : [],
   )
+  const [mobileView, setMobileView] = useState<'list' | 'content'>('list')
 
   const isRTL = subject.direction === 'rtl'
   const contentFont = isRTL ? 'var(--font-arabic)' : 'var(--font-latin)'
@@ -73,10 +73,15 @@ export default function SubjectClient({ subject, chapters, slug }: Props) {
     setMobileExpanded((prev) => (prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]))
   }
 
+  const handleMobileSubChapterClick = (subId: string) => {
+    setActiveSubId(subId)
+    setMobileView('content')
+  }
+
   const activeSubChapter = chapters.flatMap((c) => c.subChapters).find((s) => s.id === activeSubId)
   const activeChapter = chapters.find((c) => c.subChapters.some((s) => s.id === activeSubId))
 
-  // Reusable content tabs
+  // Desktop tabs
   const ContentTabs = ({ subChapter }: { subChapter: typeof activeSubChapter }) => {
     if (!subChapter) return null
     const availableTabs = TAB_CONFIG.filter(
@@ -316,12 +321,174 @@ export default function SubjectClient({ subject, chapters, slug }: Props) {
       </div>
 
       <div style={{ borderTop: '1px solid #3c3c3c', padding: '8px 12px', flexShrink: 0 }}>
-        <a href="/" style={{ fontSize: '12px', color: '#888', textDecoration: 'none' }}>
-          ← Home
+        <a
+          href="/"
+          style={{
+            fontSize: '12px',
+            color: '#888',
+            textDecoration: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+          }}
+        >
+          <ArrowLeft size={14} /> Home
         </a>
       </div>
     </>
   )
+
+  // Mobile content view with bottom tabs
+  const MobileContentView = () => {
+    if (!activeSubChapter) return null
+    const allSubs = chapters.flatMap((c) => c.subChapters)
+    const currentIdx = allSubs.findIndex((s) => s.id === activeSubId)
+    const prev = allSubs[currentIdx - 1]
+    const next = allSubs[currentIdx + 1]
+
+    return (
+      <div style={{ minHeight: '100vh', background: '#1e1e1e' }}>
+        {/* Header */}
+        <div
+          style={{
+            background: '#252526',
+            borderBottom: '1px solid #3c3c3c',
+            padding: '12px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+          }}
+        >
+          <button
+            onClick={() => setMobileView('list')}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: '#888',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              fontSize: '12px',
+            }}
+          >
+            <ArrowLeft size={14} /> Back
+          </button>
+          <span
+            style={{
+              fontSize: '13px',
+              color: '#fff',
+              fontWeight: 600,
+              flex: 1,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {activeSubChapter.title}
+          </span>
+        </div>
+
+        {/* Content */}
+        <div
+          style={{
+            padding: '16px',
+            direction: subject.direction,
+            textAlign: isRTL ? 'right' : 'left',
+            fontFamily: contentFont,
+            paddingBottom: '80px',
+          }}
+        >
+          <p
+            style={{
+              fontSize: '11px',
+              color: '#888',
+              fontFamily: 'monospace',
+              marginBottom: '8px',
+              direction: 'ltr',
+              textAlign: 'left',
+            }}
+          >
+            {activeChapter?.order}.{activeSubChapter.order} — {activeChapter?.title}
+          </p>
+          <h1
+            style={{
+              fontSize: '22px',
+              fontWeight: 600,
+              color: '#d4d4d4',
+              marginBottom: '20px',
+              fontFamily: contentFont,
+            }}
+          >
+            {activeSubChapter.title}
+          </h1>
+
+          {/* Bottom tabs for mobile */}
+          <BottomTabsClient
+            content={{
+              theory: activeSubChapter.content?.theory,
+              example: activeSubChapter.content?.example,
+              codeBlock: activeSubChapter.content?.codeBlock ?? undefined,
+              summary: activeSubChapter.content?.summary ?? undefined,
+              exercise: activeSubChapter.content?.exercise,
+            }}
+            isRTL={isRTL}
+            contentFont={contentFont}
+          />
+
+          {/* Prev / Next */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              marginTop: '32px',
+              paddingTop: '16px',
+              borderTop: '1px solid #3c3c3c',
+            }}
+          >
+            {prev ? (
+              <button
+                onClick={() => setActiveSubId(prev.id)}
+                style={{
+                  fontSize: '12px',
+                  color: '#888',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+              >
+                <ArrowLeft size={14} /> {prev.title}
+              </button>
+            ) : (
+              <div />
+            )}
+            {next ? (
+              <button
+                onClick={() => setActiveSubId(next.id)}
+                style={{
+                  fontSize: '12px',
+                  color: '#888',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+              >
+                {next.title} <ArrowRight size={14} />
+              </button>
+            ) : (
+              <div />
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div
@@ -334,153 +501,163 @@ export default function SubjectClient({ subject, chapters, slug }: Props) {
     >
       {/* ── MOBILE VIEW ── */}
       <div className="md:hidden" style={{ minHeight: '100vh' }}>
-        <div
-          style={{
-            background: '#252526',
-            borderBottom: '1px solid #3c3c3c',
-            padding: '12px 16px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <a
-            href="/"
-            style={{
-              fontSize: '12px',
-              color: '#888',
-              textDecoration: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-            }}
-          >
-            <ArrowLeft size={14} /> Home
-          </a>
-          <span style={{ fontSize: '13px', color: '#fff', fontWeight: 600 }}>{subject.title}</span>
-          <div style={{ width: '40px' }} />
-        </div>
+        {mobileView === 'content' ? (
+          <MobileContentView />
+        ) : (
+          <>
+            <div
+              style={{
+                background: '#252526',
+                borderBottom: '1px solid #3c3c3c',
+                padding: '12px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <a
+                href="/"
+                style={{
+                  fontSize: '12px',
+                  color: '#888',
+                  textDecoration: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}
+              >
+                <ArrowLeft size={14} /> Home
+              </a>
+              <span style={{ fontSize: '13px', color: '#fff', fontWeight: 600 }}>
+                {subject.title}
+              </span>
+              <div style={{ width: '40px' }} />
+            </div>
 
-        <div
-          style={{
-            padding: '16px',
-            direction: subject.direction,
-            textAlign: isRTL ? 'right' : 'left',
-            fontFamily: contentFont,
-          }}
-        >
-          {chapters.map((chapter) => {
-            const isMobileExpanded = mobileExpanded.includes(chapter.id)
-            return (
-              <div key={chapter.id} style={{ marginBottom: '12px' }}>
-                <button
-                  onClick={() => toggleMobileChapter(chapter.id)}
-                  style={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '10px 14px',
-                    background: '#252526',
-                    border: 'none',
-                    borderRadius: isMobileExpanded ? '6px 6px 0 0' : '6px',
-                    borderBottom: isMobileExpanded ? '1px solid #3c3c3c' : 'none',
-                    cursor: 'pointer',
-                    direction: 'inherit',
-                  }}
-                >
-                  {isMobileExpanded ? (
-                    <Minus size={14} color="#888" style={{ flexShrink: 0 }} />
-                  ) : (
-                    <Plus size={14} color="#888" style={{ flexShrink: 0 }} />
-                  )}
-                  <span style={{ fontSize: '11px', color: '#888', fontFamily: 'monospace' }}>
-                    {String(chapter.order).padStart(2, '0')}
-                  </span>
-                  <span
-                    style={{
-                      fontSize: '13px',
-                      fontWeight: 600,
-                      color: '#d4d4d4',
-                      flex: 1,
-                      textAlign: isRTL ? 'right' : 'left',
-                    }}
-                  >
-                    {chapter.title}
-                  </span>
-                  <span
-                    style={{
-                      fontSize: '10px',
-                      padding: '2px 8px',
-                      borderRadius: '20px',
-                      background: DIFF[chapter.difficulty]?.bg,
-                      color: DIFF[chapter.difficulty]?.color,
-                      flexShrink: 0,
-                    }}
-                  >
-                    {DIFF[chapter.difficulty]?.label}
-                  </span>
-                </button>
+            <div
+              style={{
+                padding: '16px',
+                direction: subject.direction,
+                textAlign: isRTL ? 'right' : 'left',
+                fontFamily: contentFont,
+              }}
+            >
+              {chapters.map((chapter) => {
+                const isMobileExpanded = mobileExpanded.includes(chapter.id)
+                return (
+                  <div key={chapter.id} style={{ marginBottom: '12px' }}>
+                    <button
+                      onClick={() => toggleMobileChapter(chapter.id)}
+                      style={{
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        padding: '10px 14px',
+                        background: '#252526',
+                        border: 'none',
+                        borderRadius: isMobileExpanded ? '6px 6px 0 0' : '6px',
+                        borderBottom: isMobileExpanded ? '1px solid #3c3c3c' : 'none',
+                        cursor: 'pointer',
+                        direction: 'inherit',
+                      }}
+                    >
+                      {isMobileExpanded ? (
+                        <Minus size={14} color="#888" style={{ flexShrink: 0 }} />
+                      ) : (
+                        <Plus size={14} color="#888" style={{ flexShrink: 0 }} />
+                      )}
+                      <span style={{ fontSize: '11px', color: '#888', fontFamily: 'monospace' }}>
+                        {String(chapter.order).padStart(2, '0')}
+                      </span>
+                      <span
+                        style={{
+                          fontSize: '13px',
+                          fontWeight: 600,
+                          color: '#d4d4d4',
+                          flex: 1,
+                          textAlign: isRTL ? 'right' : 'left',
+                        }}
+                      >
+                        {chapter.title}
+                      </span>
+                      <span
+                        style={{
+                          fontSize: '10px',
+                          padding: '2px 8px',
+                          borderRadius: '20px',
+                          background: DIFF[chapter.difficulty]?.bg,
+                          color: DIFF[chapter.difficulty]?.color,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {DIFF[chapter.difficulty]?.label}
+                      </span>
+                    </button>
 
-                {isMobileExpanded && (
-                  <div
-                    style={{
-                      background: '#1e1e1e',
-                      border: '1px solid #3c3c3c',
-                      borderTop: 'none',
-                      borderRadius: '0 0 6px 6px',
-                      overflow: 'hidden',
-                    }}
-                  >
-                    {chapter.subChapters.length === 0 ? (
-                      <div style={{ padding: '10px 14px', fontSize: '12px', color: '#555' }}>
-                        No sections yet
+                    {isMobileExpanded && (
+                      <div
+                        style={{
+                          background: '#1e1e1e',
+                          border: '1px solid #3c3c3c',
+                          borderTop: 'none',
+                          borderRadius: '0 0 6px 6px',
+                          overflow: 'hidden',
+                        }}
+                      >
+                        {chapter.subChapters.length === 0 ? (
+                          <div style={{ padding: '10px 14px', fontSize: '12px', color: '#555' }}>
+                            No sections yet
+                          </div>
+                        ) : (
+                          chapter.subChapters.map((sub, idx) => (
+                            <div
+                              key={sub.id}
+                              onClick={() => handleMobileSubChapterClick(sub.id)}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                padding: '12px 14px',
+                                cursor: 'pointer',
+                                borderBottom:
+                                  idx < chapter.subChapters.length - 1
+                                    ? '1px solid #2a2a2a'
+                                    : 'none',
+                              }}
+                            >
+                              <span
+                                style={{
+                                  fontSize: '11px',
+                                  color: '#555',
+                                  fontFamily: 'monospace',
+                                  flexShrink: 0,
+                                }}
+                              >
+                                {chapter.order}.{sub.order}
+                              </span>
+                              <span
+                                style={{
+                                  fontSize: '13px',
+                                  color: '#ccc',
+                                  flex: 1,
+                                  fontFamily: contentFont,
+                                }}
+                              >
+                                {sub.title}
+                              </span>
+                              <span style={{ color: '#555', fontSize: '14px' }}>›</span>
+                            </div>
+                          ))
+                        )}
                       </div>
-                    ) : (
-                      chapter.subChapters.map((sub, idx) => (
-                        <Link
-                          key={sub.id}
-                          href={`/${slug}/${sub.id}`}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '10px',
-                            padding: '12px 14px',
-                            textDecoration: 'none',
-                            borderBottom:
-                              idx < chapter.subChapters.length - 1 ? '1px solid #2a2a2a' : 'none',
-                          }}
-                        >
-                          <span
-                            style={{
-                              fontSize: '11px',
-                              color: '#555',
-                              fontFamily: 'monospace',
-                              flexShrink: 0,
-                            }}
-                          >
-                            {chapter.order}.{sub.order}
-                          </span>
-                          <span
-                            style={{
-                              fontSize: '13px',
-                              color: '#ccc',
-                              flex: 1,
-                              fontFamily: contentFont,
-                            }}
-                          >
-                            {sub.title}
-                          </span>
-                          <span style={{ color: '#555', fontSize: '14px' }}>›</span>
-                        </Link>
-                      ))
                     )}
                   </div>
-                )}
-              </div>
-            )
-          })}
-        </div>
+                )
+              })}
+            </div>
+          </>
+        )}
       </div>
 
       {/* ── DESKTOP VIEW ── */}
