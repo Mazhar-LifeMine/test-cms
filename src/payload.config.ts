@@ -33,7 +33,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
     components: {
-      beforeDashboard: ['@/components/RevalidateButton#default'],
+      beforeDashboard: ['/src/components/RevalidateButton'],
     },
   },
   collections: [Users, Media, Subjects, Chapters, SubChapters],
