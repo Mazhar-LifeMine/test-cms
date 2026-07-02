@@ -31,6 +31,7 @@ export const SubChapters: CollectionConfig = {
     afterChange: [
       async ({ doc, req }) => {
         // get subject slug
+        console.log('🔥 SubChapter afterChange hook fired!', doc.id)
         const subject = await req.payload.findByID({
           collection: 'subjects',
           id: typeof doc.subject === 'string' ? doc.subject : doc.subject.id,
