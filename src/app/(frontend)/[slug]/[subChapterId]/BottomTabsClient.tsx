@@ -45,7 +45,7 @@ export default function BottomTabsClient({ content, isRTL, contentFont }: Props)
       >
         <p
           style={{
-            fontSize: '11px',
+            fontSize: '13px', // 11→13
             fontFamily: 'monospace',
             letterSpacing: '1px',
             textTransform: 'uppercase',
@@ -56,7 +56,7 @@ export default function BottomTabsClient({ content, isRTL, contentFont }: Props)
             gap: '6px',
           }}
         >
-          {activeConfig && <activeConfig.Icon size={14} />}
+          {activeConfig && <activeConfig.Icon size={16} />} {/* 14→16 */}
           {activeConfig?.label}
         </p>
 
@@ -64,7 +64,7 @@ export default function BottomTabsClient({ content, isRTL, contentFont }: Props)
           <pre
             style={{
               margin: 0,
-              fontSize: '13px',
+              fontSize: '15px', // 13→15
               color: '#9cdcfe',
               fontFamily: 'monospace',
               overflowX: 'auto',
@@ -78,7 +78,7 @@ export default function BottomTabsClient({ content, isRTL, contentFont }: Props)
         ) : activeTab === 'summary' ? (
           <div
             style={{
-              fontSize: isRTL ? '20px' : '14px',
+              fontSize: isRTL ? '20px' : '16px', // 14→16
               color: '#d1d5db',
               lineHeight: isRTL ? '2' : '1.8',
               whiteSpace: 'pre-line',
@@ -91,7 +91,7 @@ export default function BottomTabsClient({ content, isRTL, contentFont }: Props)
           <div
             className={`rich-text ${isRTL ? 'rtl-content' : ''}`}
             style={{
-              fontSize: isRTL ? '20px' : '14px',
+              fontSize: isRTL ? '20px' : '16px', // 14→16
               color: '#d1d5db',
               lineHeight: isRTL ? '2' : '1.8',
               fontFamily: contentFont,
@@ -132,10 +132,10 @@ export default function BottomTabsClient({ content, isRTL, contentFont }: Props)
               gap: '2px',
             }}
           >
-            <tab.Icon size={16} color={activeTab === tab.key ? tab.color : '#666'} />
+            <tab.Icon size={18} color={activeTab === tab.key ? tab.color : '#666'} /> {/* 16→18 */}
             <span
               style={{
-                fontSize: '10px',
+                fontSize: '12px', // 10→12
                 color: activeTab === tab.key ? tab.color : '#666',
               }}
             >

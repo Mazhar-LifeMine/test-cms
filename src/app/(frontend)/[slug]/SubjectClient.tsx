@@ -369,14 +369,14 @@ export default function SubjectClient({ subject, chapters, slug }: Props) {
               display: 'flex',
               alignItems: 'center',
               gap: '4px',
-              fontSize: '12px',
+              fontSize: '14px',
             }}
           >
-            <ArrowLeft size={14} /> Back
+            <ArrowLeft size={16} /> Back
           </button>
           <span
             style={{
-              fontSize: '13px',
+              fontSize: '15px',
               color: '#fff',
               fontWeight: 600,
               flex: 1,
@@ -385,6 +385,8 @@ export default function SubjectClient({ subject, chapters, slug }: Props) {
               whiteSpace: 'nowrap',
             }}
           >
+            {' '}
+            {/* 13→15 */}
             {activeSubChapter.title}
           </span>
         </div>
@@ -401,7 +403,7 @@ export default function SubjectClient({ subject, chapters, slug }: Props) {
         >
           <p
             style={{
-              fontSize: '11px',
+              fontSize: '13px',
               color: '#888',
               fontFamily: 'monospace',
               marginBottom: '8px',
@@ -409,21 +411,24 @@ export default function SubjectClient({ subject, chapters, slug }: Props) {
               textAlign: 'left',
             }}
           >
+            {' '}
+            {/* 11→13 */}
             {activeChapter?.order}.{activeSubChapter.order} — {activeChapter?.title}
           </p>
           <h1
             style={{
-              fontSize: '22px',
+              fontSize: '24px',
               fontWeight: 600,
               color: '#d4d4d4',
               marginBottom: '20px',
               fontFamily: contentFont,
             }}
           >
+            {' '}
+            {/* 22→24 */}
             {activeSubChapter.title}
           </h1>
 
-          {/* Bottom tabs for mobile */}
           <BottomTabsClient
             content={{
               theory: activeSubChapter.content?.theory,
@@ -450,7 +455,7 @@ export default function SubjectClient({ subject, chapters, slug }: Props) {
               <button
                 onClick={() => setActiveSubId(prev.id)}
                 style={{
-                  fontSize: '12px',
+                  fontSize: '14px',
                   color: '#888',
                   background: 'transparent',
                   border: 'none',
@@ -460,6 +465,8 @@ export default function SubjectClient({ subject, chapters, slug }: Props) {
                   gap: '6px',
                 }}
               >
+                {' '}
+                {/* 12→14 */}
                 <ArrowLeft size={14} /> {prev.title}
               </button>
             ) : (
@@ -469,7 +476,7 @@ export default function SubjectClient({ subject, chapters, slug }: Props) {
               <button
                 onClick={() => setActiveSubId(next.id)}
                 style={{
-                  fontSize: '12px',
+                  fontSize: '14px',
                   color: '#888',
                   background: 'transparent',
                   border: 'none',
@@ -479,6 +486,8 @@ export default function SubjectClient({ subject, chapters, slug }: Props) {
                   gap: '6px',
                 }}
               >
+                {' '}
+                {/* 12→14 */}
                 {next.title} <ArrowRight size={14} />
               </button>
             ) : (
@@ -505,6 +514,7 @@ export default function SubjectClient({ subject, chapters, slug }: Props) {
           <MobileContentView />
         ) : (
           <>
+            {/* Mobile Header */}
             <div
               style={{
                 background: '#252526',
@@ -518,7 +528,7 @@ export default function SubjectClient({ subject, chapters, slug }: Props) {
               <a
                 href="/"
                 style={{
-                  fontSize: '12px',
+                  fontSize: '14px',
                   color: '#888',
                   textDecoration: 'none',
                   display: 'flex',
@@ -526,14 +536,18 @@ export default function SubjectClient({ subject, chapters, slug }: Props) {
                   gap: '4px',
                 }}
               >
+                {' '}
+                {/* 12→14 */}
                 <ArrowLeft size={14} /> Home
               </a>
-              <span style={{ fontSize: '13px', color: '#fff', fontWeight: 600 }}>
+              <span style={{ fontSize: '15px', color: '#fff', fontWeight: 600 }}>
                 {subject.title}
-              </span>
+              </span>{' '}
+              {/* 13→15 */}
               <div style={{ width: '40px' }} />
             </div>
 
+            {/* Mobile Chapter List */}
             <div
               style={{
                 padding: '16px',
@@ -553,7 +567,7 @@ export default function SubjectClient({ subject, chapters, slug }: Props) {
                         display: 'flex',
                         alignItems: 'center',
                         gap: '8px',
-                        padding: '10px 14px',
+                        padding: '12px 14px',
                         background: '#252526',
                         border: 'none',
                         borderRadius: isMobileExpanded ? '6px 6px 0 0' : '6px',
@@ -563,27 +577,31 @@ export default function SubjectClient({ subject, chapters, slug }: Props) {
                       }}
                     >
                       {isMobileExpanded ? (
-                        <Minus size={14} color="#888" style={{ flexShrink: 0 }} />
+                        <Minus size={16} color="#888" style={{ flexShrink: 0 }} />
                       ) : (
-                        <Plus size={14} color="#888" style={{ flexShrink: 0 }} />
+                        <Plus size={16} color="#888" style={{ flexShrink: 0 }} />
                       )}
-                      <span style={{ fontSize: '11px', color: '#888', fontFamily: 'monospace' }}>
+                      <span style={{ fontSize: '13px', color: '#888', fontFamily: 'monospace' }}>
+                        {' '}
+                        {/* 11→13 */}
                         {String(chapter.order).padStart(2, '0')}
                       </span>
                       <span
                         style={{
-                          fontSize: '13px',
+                          fontSize: '15px',
                           fontWeight: 600,
                           color: '#d4d4d4',
                           flex: 1,
                           textAlign: isRTL ? 'right' : 'left',
                         }}
                       >
+                        {' '}
+                        {/* 13→15 */}
                         {chapter.title}
                       </span>
                       <span
                         style={{
-                          fontSize: '10px',
+                          fontSize: '12px',
                           padding: '2px 8px',
                           borderRadius: '20px',
                           background: DIFF[chapter.difficulty]?.bg,
@@ -591,6 +609,8 @@ export default function SubjectClient({ subject, chapters, slug }: Props) {
                           flexShrink: 0,
                         }}
                       >
+                        {' '}
+                        {/* 10→12 */}
                         {DIFF[chapter.difficulty]?.label}
                       </span>
                     </button>
@@ -606,7 +626,7 @@ export default function SubjectClient({ subject, chapters, slug }: Props) {
                         }}
                       >
                         {chapter.subChapters.length === 0 ? (
-                          <div style={{ padding: '10px 14px', fontSize: '12px', color: '#555' }}>
+                          <div style={{ padding: '10px 14px', fontSize: '14px', color: '#555' }}>
                             No sections yet
                           </div>
                         ) : (
@@ -618,7 +638,7 @@ export default function SubjectClient({ subject, chapters, slug }: Props) {
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '10px',
-                                padding: '12px 14px',
+                                padding: '14px',
                                 cursor: 'pointer',
                                 borderBottom:
                                   idx < chapter.subChapters.length - 1
@@ -628,25 +648,30 @@ export default function SubjectClient({ subject, chapters, slug }: Props) {
                             >
                               <span
                                 style={{
-                                  fontSize: '11px',
+                                  fontSize: '13px',
                                   color: '#555',
                                   fontFamily: 'monospace',
                                   flexShrink: 0,
                                 }}
                               >
+                                {' '}
+                                {/* 11→13 */}
                                 {chapter.order}.{sub.order}
                               </span>
                               <span
                                 style={{
-                                  fontSize: '13px',
+                                  fontSize: '15px',
                                   color: '#ccc',
                                   flex: 1,
                                   fontFamily: contentFont,
                                 }}
                               >
+                                {' '}
+                                {/* 13→15 */}
                                 {sub.title}
                               </span>
-                              <span style={{ color: '#555', fontSize: '14px' }}>›</span>
+                              <span style={{ color: '#555', fontSize: '16px' }}>›</span>{' '}
+                              {/* 14→16 */}
                             </div>
                           ))
                         )}
