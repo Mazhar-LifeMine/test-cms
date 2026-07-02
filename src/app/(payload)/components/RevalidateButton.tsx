@@ -2,7 +2,11 @@
 
 import { useState } from 'react'
 
-export const RevalidateButton = () => {
+type Props = {
+  paths?: string[]
+}
+
+export const RevalidateButton = ({ paths = ['/'] }: Props) => {
   const [loading, setLoading] = useState(false)
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
 
@@ -11,26 +15,18 @@ export const RevalidateButton = () => {
     setStatus('idle')
     try {
       const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/my-route/revalidate-pages`
-      console.log('Calling revalidate URL:', url)
-
       const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          paths: ['/'],
+          paths,
           secret: process.env.NEXT_PUBLIC_REVALIDATE_SECRET,
         }),
       })
-
       const data = await res.json()
       console.log('Revalidation response:', res.status, data)
-
-      if (res.ok) {
-        setStatus('success')
-      } else {
-        console.error('Revalidation error:', data)
-        setStatus('error')
-      }
+      if (res.ok) setStatus('success')
+      else setStatus('error')
     } catch (err) {
       console.error('Revalidation fetch failed:', err)
       setStatus('error')
@@ -40,7 +36,7 @@ export const RevalidateButton = () => {
   }
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div style={{ padding: '8px 0' }}>
       <button
         onClick={handleRevalidate}
         disabled={loading}
@@ -48,24 +44,20 @@ export const RevalidateButton = () => {
           background: loading ? '#444' : '#6c63ff',
           color: '#fff',
           border: 'none',
-          padding: '10px 24px',
+          padding: '8px 20px',
           borderRadius: '6px',
           cursor: loading ? 'not-allowed' : 'pointer',
-          fontSize: '14px',
+          fontSize: '13px',
           fontWeight: 600,
         }}
       >
-        {loading ? 'Revalidating...' : '🔄 Revalidate All Pages'}
+        {loading ? 'Revalidating...' : '🔄 Revalidate'}
       </button>
       {status === 'success' && (
-        <p style={{ color: '#22c55e', marginTop: '8px', fontSize: '13px' }}>
-          ✅ Pages revalidated successfully!
-        </p>
+        <p style={{ color: '#22c55e', marginTop: '6px', fontSize: '12px' }}>✅ Revalidated!</p>
       )}
       {status === 'error' && (
-        <p style={{ color: '#ef4444', marginTop: '8px', fontSize: '13px' }}>
-          ❌ Revalidation failed!
-        </p>
+        <p style={{ color: '#ef4444', marginTop: '6px', fontSize: '12px' }}>❌ Failed!</p>
       )}
     </div>
   )
