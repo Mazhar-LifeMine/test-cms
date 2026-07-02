@@ -32,8 +32,12 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    components: {
+      beforeDashboard: ['/src/components/RevalidateButton#default'],
+    },
   },
   collections: [Users, Media, Subjects, Chapters, SubChapters],
+
   globals: [SiteSettings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
