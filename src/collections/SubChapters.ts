@@ -1,10 +1,56 @@
 import { CollectionConfig } from 'payload'
 
+const revalidate = async (paths: string[]) => {
+  try {
+    await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/revalidate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        paths,
+        secret: process.env.REVALIDATE_SECRET,
+      }),
+    })
+  } catch (err) {
+    console.error('Revalidation failed:', err)
+  }
+}
+
 export const SubChapters: CollectionConfig = {
   slug: 'sub-chapters',
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'chapter', 'order', 'createdAt'],
+  },
+  hooks: {
+    afterChange: [
+      async ({ doc, req }) => {
+        // get subject slug
+        const subject = await req.payload.findByID({
+          collection: 'subjects',
+          id: typeof doc.subject === 'string' ? doc.subject : doc.subject.id,
+        })
+        const slug = subject?.slug
+        if (slug) {
+          await revalidate([
+            '/', // homepage
+            `/${slug}`, // subject page
+            `/${slug}/${doc.id}`, // subchapter page
+          ])
+        }
+      },
+    ],
+    afterDelete: [
+      async ({ doc, req }) => {
+        const subject = await req.payload.findByID({
+          collection: 'subjects',
+          id: typeof doc.subject === 'string' ? doc.subject : doc.subject.id,
+        })
+        const slug = subject?.slug
+        if (slug) {
+          await revalidate(['/', `/${slug}`, `/${slug}/${doc.id}`])
+        }
+      },
+    ],
   },
   fields: [
     {
@@ -12,7 +58,6 @@ export const SubChapters: CollectionConfig = {
       type: 'text',
       required: true,
     },
-    // Step 1 — select subject first
     {
       name: 'subject',
       type: 'relationship',
@@ -22,7 +67,6 @@ export const SubChapters: CollectionConfig = {
         description: 'Select subject first to filter chapters',
       },
     },
-    // Step 2 — chapter filtered by subject
     {
       name: 'chapter',
       type: 'relationship',
@@ -48,32 +92,47 @@ export const SubChapters: CollectionConfig = {
       type: 'group',
       fields: [
         {
-          name: 'theory',
-          type: 'richText',
-          admin: { description: '📖 Main explanation' },
-        },
-        {
-          name: 'example',
-          type: 'richText',
-          admin: { description: '💻 Real world example' },
-        },
-        {
-          name: 'codeBlock',
-          type: 'code',
-          admin: {
-            language: 'typescript',
-            description: '⌨️ Code snippet',
-          },
-        },
-        {
-          name: 'summary',
-          type: 'textarea',
-          admin: { description: '📝 Key points to remember' },
-        },
-        {
-          name: 'exercise',
-          type: 'richText',
-          admin: { description: '✏️ Practice question' },
+          type: 'tabs',
+          tabs: [
+            {
+              label: '📖 Theory',
+              fields: [
+                { name: 'theory', type: 'richText', admin: { description: 'Main explanation' } },
+              ],
+            },
+            {
+              label: '💻 Example',
+              fields: [
+                { name: 'example', type: 'richText', admin: { description: 'Real world example' } },
+              ],
+            },
+            {
+              label: '⌨️ Code',
+              fields: [
+                {
+                  name: 'codeBlock',
+                  type: 'code',
+                  admin: { language: 'typescript', description: 'Code snippet' },
+                },
+              ],
+            },
+            {
+              label: '📝 Summary',
+              fields: [
+                {
+                  name: 'summary',
+                  type: 'textarea',
+                  admin: { description: 'Key points to remember' },
+                },
+              ],
+            },
+            {
+              label: '✏️ Exercise',
+              fields: [
+                { name: 'exercise', type: 'richText', admin: { description: 'Practice question' } },
+              ],
+            },
+          ],
         },
       ],
     },

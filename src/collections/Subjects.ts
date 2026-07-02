@@ -1,10 +1,37 @@
 import { CollectionConfig } from 'payload'
 
+const revalidate = async (paths: string[]) => {
+  try {
+    await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/revalidate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        paths,
+        secret: process.env.REVALIDATE_SECRET,
+      }),
+    })
+  } catch (err) {
+    console.error('Revalidation failed:', err)
+  }
+}
+
 export const Subjects: CollectionConfig = {
   slug: 'subjects',
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'color', 'createdAt'],
+  },
+  hooks: {
+    afterChange: [
+      async () => {
+        await revalidate(['/'])
+      },
+    ],
+    afterDelete: [
+      async () => {
+        await revalidate(['/'])
+      },
+    ],
   },
   fields: [
     {

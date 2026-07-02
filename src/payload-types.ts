@@ -240,7 +240,7 @@ export interface SubChapter {
   order: number;
   content?: {
     /**
-     * 📖 Main explanation
+     * Main explanation
      */
     theory?: {
       root: {
@@ -258,7 +258,7 @@ export interface SubChapter {
       [k: string]: unknown;
     } | null;
     /**
-     * 💻 Real world example
+     * Real world example
      */
     example?: {
       root: {
@@ -276,15 +276,15 @@ export interface SubChapter {
       [k: string]: unknown;
     } | null;
     /**
-     * ⌨️ Code snippet
+     * Code snippet
      */
     codeBlock?: string | null;
     /**
-     * 📝 Key points to remember
+     * Key points to remember
      */
     summary?: string | null;
     /**
-     * ✏️ Practice question
+     * Practice question
      */
     exercise?: {
       root: {

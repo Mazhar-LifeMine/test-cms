@@ -1,5 +1,20 @@
 import { CollectionConfig } from 'payload'
 
+const revalidate = async (paths: string[]) => {
+  try {
+    await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/revalidate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        paths,
+        secret: process.env.REVALIDATE_SECRET,
+      }),
+    })
+  } catch (err) {
+    console.error('Revalidation failed:', err)
+  }
+}
+
 export const Chapters: CollectionConfig = {
   slug: 'chapters',
   admin: {
@@ -19,6 +34,31 @@ export const Chapters: CollectionConfig = {
           data.order = docs.length > 0 ? (docs[0].order || 0) + 1 : 1
         }
         return data
+      },
+    ],
+    afterChange: [
+      async ({ doc, req }) => {
+        // get subject slug from relationship
+        const subject = await req.payload.findByID({
+          collection: 'subjects',
+          id: typeof doc.subject === 'string' ? doc.subject : doc.subject.id,
+        })
+        const slug = subject?.slug
+        if (slug) {
+          await revalidate(['/', `/${slug}`])
+        }
+      },
+    ],
+    afterDelete: [
+      async ({ doc, req }) => {
+        const subject = await req.payload.findByID({
+          collection: 'subjects',
+          id: typeof doc.subject === 'string' ? doc.subject : doc.subject.id,
+        })
+        const slug = subject?.slug
+        if (slug) {
+          await revalidate(['/', `/${slug}`])
+        }
       },
     ],
   },
@@ -47,7 +87,6 @@ export const Chapters: CollectionConfig = {
     {
       name: 'order',
       type: 'number',
-      // required: true,
       admin: {
         description: 'Chapter number e.g. 1, 2, 3',
       },
