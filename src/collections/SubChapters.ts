@@ -143,5 +143,14 @@ export const SubChapters: CollectionConfig = {
         },
       ],
     },
+    {
+      name: 'revalidateButton',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '@/app/(payload)/components/RevalidateSubChapterButton#default',
+        },
+      },
+    },
   ],
 }

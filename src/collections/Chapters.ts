@@ -104,5 +104,14 @@ export const Chapters: CollectionConfig = {
         description: 'Brief summary of what this chapter covers',
       },
     },
+    {
+      name: 'revalidateButton',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '@/app/(payload)/components/RevalidateChapterButton#default',
+        },
+      },
+    },
   ],
 }
