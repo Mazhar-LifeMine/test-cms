@@ -10,7 +10,10 @@ export const RevalidateButton = () => {
     setLoading(true)
     setStatus('idle')
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/revalidate-pages`, {
+      const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/my-route/revalidate-pages`
+      console.log('Calling revalidate URL:', url)
+
+      const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -18,12 +21,18 @@ export const RevalidateButton = () => {
           secret: process.env.NEXT_PUBLIC_REVALIDATE_SECRET,
         }),
       })
+
+      const data = await res.json()
+      console.log('Revalidation response:', res.status, data)
+
       if (res.ok) {
         setStatus('success')
       } else {
+        console.error('Revalidation error:', data)
         setStatus('error')
       }
     } catch (err) {
+      console.error('Revalidation fetch failed:', err)
       setStatus('error')
     } finally {
       setLoading(false)
