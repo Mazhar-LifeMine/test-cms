@@ -21,6 +21,12 @@ export const Chapters: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'subject', 'difficulty', 'order'],
   },
+  access: {
+    read: () => true,
+    create: ({ req }) => !!req.user,
+    update: ({ req }) => !!req.user,
+    delete: ({ req }) => !!req.user,
+  },
   hooks: {
     beforeChange: [
       async ({ data, operation, req }) => {

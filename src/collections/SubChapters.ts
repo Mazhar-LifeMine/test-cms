@@ -21,6 +21,12 @@ export const SubChapters: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'chapter', 'order', 'createdAt'],
   },
+  access: {
+    read: () => true,
+    create: ({ req }) => !!req.user,
+    update: ({ req }) => !!req.user,
+    delete: ({ req }) => !!req.user,
+  },
   hooks: {
     afterChange: [
       async ({ doc, req }) => {
