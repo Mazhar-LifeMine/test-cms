@@ -10,7 +10,7 @@ export const RevalidateButton = () => {
     setLoading(true)
     setStatus('idle')
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/revalidate`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/revalidate-pages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
