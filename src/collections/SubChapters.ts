@@ -95,6 +95,16 @@ export const SubChapters: CollectionConfig = {
       required: true,
     },
     {
+      name: 'revalidateButton',
+      type: 'ui',
+      admin: {
+        position: 'sidebar', // ← try sidebar first to confirm it works
+        components: {
+          Field: '@/app/(payload)/components/RevalidateSubChapterButton#default',
+        },
+      },
+    },
+    {
       name: 'content',
       type: 'group',
       fields: [
@@ -142,15 +152,6 @@ export const SubChapters: CollectionConfig = {
           ],
         },
       ],
-    },
-    {
-      name: 'revalidateButton',
-      type: 'ui',
-      admin: {
-        components: {
-          Field: '@/app/(payload)/components/RevalidateSubChapterButton#default',
-        },
-      },
     },
   ],
 }
