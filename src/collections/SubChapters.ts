@@ -38,7 +38,7 @@ export const SubChapters: CollectionConfig = {
         })
         const slug = subject?.slug
         if (slug) {
-          await revalidate([
+          revalidate([
             '/', // homepage
             `/${slug}`, // subject page
             `/${slug}/${doc.id}`, // subchapter page
