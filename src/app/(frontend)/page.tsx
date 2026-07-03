@@ -3,30 +3,23 @@ import config from '@payload-config'
 import Link from 'next/link'
 import { getServerSession } from 'next-auth'
 import LogoutButton from './LogoutButton'
-import { getUserWithAccess } from '@/lib/auth'
-
-export const revalidate = 3600
-
-export async function generateStaticParams() {
-  return []
-}
 
 export default async function HomePage() {
   const session = await getServerSession()
   const payload = await getPayload({ config })
-  const user = await getUserWithAccess()
+
+  const allowedSlugs: string[] = (session?.user as any)?.allowedSlugs ?? []
+  const isAdmin = (session?.user as any)?.role === 'admin'
 
   const { docs: allSubjects } = await payload.find({
     collection: 'subjects',
     sort: 'order',
   })
 
-  // filter subjects based on user access
-  const subjects = user?.isAdmin
+  // filter using token — no DB call for permissions!
+  const subjects = isAdmin
     ? allSubjects
-    : allSubjects.filter((subject) =>
-        user?.allowedSubjects.some((s: any) => (typeof s === 'object' ? s.id : s) === subject.id),
-      )
+    : allSubjects.filter((subject) => allowedSlugs.includes(subject.slug as string))
 
   return (
     <main className="min-h-screen bg-black text-white px-6 py-12">
