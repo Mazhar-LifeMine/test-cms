@@ -22,12 +22,14 @@ export default buildConfig({
     'http://localhost:3001',
     'https://test-cms-git-main-mahmmod-hashmi.vercel.app',
     'https://learn.tariqjhangiriruhanicenter.in',
+    'https://learn.qutbul-madar.in',
   ],
   csrf: [
     'http://localhost:3000',
     'http://localhost:3001',
     'https://test-cms-git-main-mahmmod-hashmi.vercel.app',
     'https://learn.tariqjhangiriruhanicenter.in',
+    'https://learn.qutbul-madar.in',
   ],
   admin: {
     user: Users.slug,
