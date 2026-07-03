@@ -3,6 +3,7 @@ import config from '@payload-config'
 import Link from 'next/link'
 import { getServerSession } from 'next-auth'
 import LogoutButton from './LogoutButton'
+import { getUserWithAccess } from '@/lib/auth'
 
 export const revalidate = 3600
 
@@ -13,11 +14,19 @@ export async function generateStaticParams() {
 export default async function HomePage() {
   const session = await getServerSession()
   const payload = await getPayload({ config })
+  const user = await getUserWithAccess()
 
-  const { docs: subjects } = await payload.find({
+  const { docs: allSubjects } = await payload.find({
     collection: 'subjects',
     sort: 'order',
   })
+
+  // filter subjects based on user access
+  const subjects = user?.isAdmin
+    ? allSubjects
+    : allSubjects.filter((subject) =>
+        user?.allowedSubjects.some((s: any) => (typeof s === 'object' ? s.id : s) === subject.id),
+      )
 
   return (
     <main className="min-h-screen bg-black text-white px-6 py-12">
@@ -41,18 +50,25 @@ export default async function HomePage() {
       {/* Subjects Grid */}
       <div className="max-w-4xl mx-auto">
         <p className="text-xs font-mono text-gray-500 uppercase tracking-widest mb-4">Subjects</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {subjects.map((subject) => (
-            <Link
-              key={subject.id}
-              href={`/${subject.slug}`}
-              className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 hover:border-purple-500 transition-colors cursor-pointer block"
-            >
-              <h2 className="text-lg font-semibold mb-2">{subject.title}</h2>
-              <p className="text-gray-400 text-sm leading-relaxed">{subject.description}</p>
-            </Link>
-          ))}
-        </div>
+        {subjects.length === 0 ? (
+          <div style={{ color: '#888', fontSize: '14px', textAlign: 'center', marginTop: '48px' }}>
+            <p>No subjects assigned yet.</p>
+            <p style={{ marginTop: '8px' }}>Please contact admin for access.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {subjects.map((subject) => (
+              <Link
+                key={subject.id}
+                href={`/${subject.slug}`}
+                className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 hover:border-purple-500 transition-colors cursor-pointer block"
+              >
+                <h2 className="text-lg font-semibold mb-2">{subject.title}</h2>
+                <p className="text-gray-400 text-sm leading-relaxed">{subject.description}</p>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </main>
   )
