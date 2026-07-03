@@ -1,5 +1,6 @@
 import React from 'react'
 import './styles.css'
+import NextAuthProvider from './SessionProvider'
 
 export const metadata = {
   title: 'MazharLearn — Personal Learning Platform',
@@ -46,7 +47,9 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
         />
       </head>
       <body>
-        <main>{children}</main>
+        <NextAuthProvider>
+          <main>{children}</main>
+        </NextAuthProvider>
       </body>
     </html>
   )

@@ -1,8 +1,17 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import Link from 'next/link'
+import { getServerSession } from 'next-auth'
+import LogoutButton from './LogoutButton'
+
 export const revalidate = 3600
+
+export async function generateStaticParams() {
+  return []
+}
+
 export default async function HomePage() {
+  const session = await getServerSession()
   const payload = await getPayload({ config })
 
   const { docs: subjects } = await payload.find({
@@ -13,12 +22,20 @@ export default async function HomePage() {
   return (
     <main className="min-h-screen bg-black text-white px-6 py-12">
       {/* Header */}
-      <div className="max-w-4xl mx-auto mb-12">
-        <p className="text-purple-400 text-sm font-mono tracking-widest uppercase mb-3">
-          Personal Learning Platform
-        </p>
-        <h1 className="text-5xl font-bold tracking-tight mb-4">My Learning Hub</h1>
-        <p className="text-gray-400 text-lg">Structured path from Rookie to Master 🚀</p>
+      <div className="max-w-4xl mx-auto mb-12 flex justify-between items-start">
+        <div>
+          <p className="text-purple-400 text-sm font-mono tracking-widest uppercase mb-3">
+            Personal Learning Platform
+          </p>
+          <h1 className="text-5xl font-bold tracking-tight mb-4">My Learning Hub</h1>
+          <p className="text-gray-400 text-lg">Structured path from Rookie to Master 🚀</p>
+        </div>
+        <div style={{ textAlign: 'right' }}>
+          <p style={{ color: '#888', fontSize: '12px', marginBottom: '8px' }}>
+            {session?.user?.email}
+          </p>
+          <LogoutButton />
+        </div>
       </div>
 
       {/* Subjects Grid */}
