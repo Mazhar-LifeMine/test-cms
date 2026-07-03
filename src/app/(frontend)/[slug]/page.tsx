@@ -2,7 +2,6 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { notFound } from 'next/navigation'
 import SubjectClient from './SubjectClient'
-import { getUserWithAccess, hasSubjectAccess } from '@/lib/auth'
 
 export const revalidate = 3600
 
@@ -28,30 +27,6 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
 
   if (!subjects[0]) return notFound()
   const subject = subjects[0]
-
-  // check access
-  const user = await getUserWithAccess()
-  if (!hasSubjectAccess(user, subject.id)) {
-    return (
-      <div
-        style={{
-          minHeight: '100vh',
-          background: '#1e1e1e',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexDirection: 'column',
-          gap: '16px',
-        }}
-      >
-        <h1 style={{ color: '#ef4444', fontSize: '24px' }}>Access Denied</h1>
-        <p style={{ color: '#888', fontSize: '14px' }}>You don't have access to this subject.</p>
-        <a href="/" style={{ color: '#6c63ff', fontSize: '14px' }}>
-          ← Back to Home
-        </a>
-      </div>
-    )
-  }
 
   const { docs: chapters } = await payload.find({
     collection: 'chapters',

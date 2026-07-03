@@ -30,7 +30,6 @@ const handler = NextAuth({
           where: { email: { equals: user.email } },
         })
         if (docs.length === 0) {
-          // first time login → create user with default role
           await payload.create({
             collection: 'users',
             data: {
@@ -46,6 +45,37 @@ const handler = NextAuth({
         console.error('SignIn error:', err)
         return true
       }
+    },
+    async jwt({ token, user, trigger }) {
+      // fetch fresh data on login or session update
+      if (user || trigger === 'update') {
+        try {
+          const payload = await getPayload({ config })
+          const { docs } = await payload.find({
+            collection: 'users',
+            where: { email: { equals: token.email } },
+            depth: 1,
+          })
+          if (docs[0]) {
+            const dbUser = docs[0] as any
+            token.role = dbUser.role ?? 'user'
+            // store subject slugs in token
+            token.allowedSlugs = (dbUser.allowedSubjects ?? []).map((s: any) =>
+              typeof s === 'object' ? s.slug : s,
+            )
+          }
+        } catch (err) {
+          console.error('JWT error:', err)
+        }
+      }
+      return token
+    },
+    async session({ session, token }) {
+      if (session?.user) {
+        ;(session.user as any).role = token.role
+        ;(session.user as any).allowedSlugs = token.allowedSlugs
+      }
+      return session
     },
     async redirect({ url, baseUrl }) {
       return baseUrl
