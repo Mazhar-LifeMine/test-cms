@@ -7,23 +7,19 @@ export default withAuth(
     const token = (req as any).nextauth?.token
     const pathname = req.nextUrl.pathname
 
-    // only check subject access for /[slug] routes
     const slugMatch = pathname.match(/^\/([^\/]+)$/)
     if (slugMatch) {
       const slug = slugMatch[1]
 
-      // skip these paths
       const skipPaths = ['login', 'api', '_next', 'favicon', 'og-image', 'admin']
       if (skipPaths.some((p) => slug.startsWith(p))) {
         return NextResponse.next()
       }
 
-      // check if user is admin
       if (token?.role === 'admin') {
         return NextResponse.next()
       }
 
-      // check if slug is in allowed subjects
       const allowedSlugs: string[] = token?.allowedSlugs ?? []
       if (!allowedSlugs.includes(slug)) {
         return NextResponse.redirect(new URL('/?error=access_denied', req.url))
@@ -40,5 +36,5 @@ export default withAuth(
 )
 
 export const config = {
-  matcher: ['/((?!login|api/auth|api|_next/static|_next/image|favicon.ico|og-image.png).*)'],
+  matcher: ['/((?!admin|login|api/auth|api|_next/static|_next/image|favicon.ico|og-image.png).*)'],
 }
