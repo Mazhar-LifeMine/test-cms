@@ -2,6 +2,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import Link from 'next/link'
 import { Suspense } from 'react'
+import { unstable_cache } from 'next/cache'
 import AccessDeniedPopup from './AccessDeniedPopup'
 import UserInfo from './UserInfo'
 
@@ -11,13 +12,24 @@ export async function generateStaticParams() {
   return []
 }
 
-export default async function HomePage() {
-  const payload = await getPayload({ config })
+const getCachedSubjects = unstable_cache(
+  async () => {
+    const payload = await getPayload({ config })
+    const { docs: subjects } = await payload.find({
+      collection: 'subjects',
+      sort: 'order',
+    })
+    return subjects
+  },
+  ['subjects-list'],
+  {
+    revalidate: 3600,
+    tags: ['subjects'],
+  },
+)
 
-  const { docs: subjects } = await payload.find({
-    collection: 'subjects',
-    sort: 'order',
-  })
+export default async function HomePage() {
+  const subjects = await getCachedSubjects()
 
   return (
     <main className="min-h-screen bg-black text-white px-6 py-12">
