@@ -1,4 +1,4 @@
-const BASE_URL = process.env.NEXT_PUBLIC_SERVER_URL || 'https://learn.qutbul-madar.in'
+const BASE_URL = 'https://learn.qutbul-madar.in'
 
 async function warmCache() {
   console.log('🔥 Starting cache warmer...')
