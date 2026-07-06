@@ -6,15 +6,7 @@ import BottomTabsClient from './BottomTabsClient'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 export const revalidate = 3600
 export async function generateStaticParams() {
-  const payload = await getPayload({ config })
-  const { docs: subChapters } = await payload.find({
-    collection: 'sub-chapters',
-    limit: 1000,
-  })
-  return subChapters.map((sub) => ({
-    slug: typeof sub.subject === 'object' ? (sub.subject as any).slug : '',
-    subChapterId: sub.id,
-  }))
+  return []
 }
 export default async function SubChapterPage({
   params,

@@ -6,14 +6,7 @@ import SubjectClient from './SubjectClient'
 export const revalidate = 3600
 
 export async function generateStaticParams() {
-  const payload = await getPayload({ config })
-  const { docs: subjects } = await payload.find({
-    collection: 'subjects',
-    limit: 100,
-  })
-  return subjects.map((subject) => ({
-    slug: subject.slug as string,
-  }))
+  return []
 }
 
 export default async function SubjectPage({ params }: { params: Promise<{ slug: string }> }) {
