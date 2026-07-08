@@ -16,6 +16,7 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
   const { docs: subjects } = await payload.find({
     collection: 'subjects',
     where: { slug: { equals: slug } },
+    limit: 100,
   })
 
   if (!subjects[0]) return notFound()
@@ -25,6 +26,7 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
     collection: 'chapters',
     where: { subject: { equals: subject.id } },
     sort: 'order',
+    limit: 100,
   })
 
   const chaptersWithSubs = await Promise.all(
@@ -33,6 +35,7 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
         collection: 'sub-chapters',
         where: { chapter: { equals: chapter.id } },
         sort: 'order',
+        limit: 100,
       })
       return { ...chapter, subChapters }
     }),
